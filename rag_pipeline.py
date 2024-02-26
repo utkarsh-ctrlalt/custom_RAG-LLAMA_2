@@ -29,7 +29,7 @@ def stoppingCriterion(model_id, hf_auth_token):
           hf_auth_token (str): The Hugging Face authentication token.
 
       Returns:
-          StoppingCriteria: The stopping criterion function.
+          StoppingCriteriaList: List of stopping criteria for model generation.
     """
     class StopOnTokens(StoppingCriteria):
         def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
@@ -128,7 +128,7 @@ def getModel(model_id, hf_auth_token):
     return llm
 
 
-def generate_response(txt,choice='txt', rag=True):
+def generate_response(txt, rag=True):
     """
     Generates a response based on input text and pre-trained language models.
 
