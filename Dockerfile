@@ -3,6 +3,8 @@ FROM python:3.8-slim AS base
 
 RUN apt-get -y update
 RUN apt-get install build-essential -y
+RUN apt-get install git -y
+RUN apt-get install wget -y
 
 # Set environment variables (customize as needed)
 ENV APP_HOME /srv
@@ -15,12 +17,13 @@ WORKDIR $APP_HOME
 # RUN apt-get update && apt-get install -y ...
 
 # Copy your Python scripts and requirements file into the container
-COPY requirements.txt $APP_HOME/
-
-RUN apt-get install git -y
-RUN apt-get install wget -y
 
 RUN git clone -b main https://github.com/utkarsh-ctrlalt/custom_RAG-LLAMA_2.git .
+COPY requirements.txt $APP_HOME/
+
+
+
+
 # Add any other scripts or resources your application needs
 
 # Install Python dependencies
