@@ -9,7 +9,7 @@ def process_query(query):
     return output
 
 def main():
-    st.title("Simple Streamlit App")
+    st.title("Custom RAG Pipeline - Llama 2")
 
     # Input text box for user query
     query = st.text_input("Enter your query:")
