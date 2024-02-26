@@ -21,8 +21,16 @@ import config
 
 
 def stoppingCriterion(model_id, hf_auth_token):
-  
+    """
+      Defines a stopping criterion for text generation.
 
+      Args:
+          model_id (str): The model identifier.
+          hf_auth_token (str): The Hugging Face authentication token.
+
+      Returns:
+          StoppingCriteria: The stopping criterion function.
+    """
     class StopOnTokens(StoppingCriteria):
         def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
             for stop_ids in stop_token_ids:
@@ -51,6 +59,13 @@ def stoppingCriterion(model_id, hf_auth_token):
 
 @st.cache_resource
 def database(store_dir_path):
+  """
+    Loads Created Chroma Vector Store.
+    Args:
+        store_dir_path (str): Path to the directory to persist the vector store.
+    Returns:
+        Chroma: The Chroma vector store.
+  """
  
   hf_embedding = HuggingFaceInstructEmbeddings()
   db = Chroma(persist_directory=store_dir_path, embedding_function=hf_embedding)
@@ -59,12 +74,23 @@ def database(store_dir_path):
 
 @st.cache_resource
 def getModel(model_id, hf_auth_token):
+    """
+      Retrieves a pre-trained language model (LLAMA 2-7B-chat-hf).
+
+      Args:
+          model_id (str): The model identifier.
+          hf_auth_token (str): The Hugging Face authentication token.
+
+      Returns:
+          HuggingFacePipeline: The pre-trained language model.
+    """
    
     model_config = transformers.AutoConfig.from_pretrained(
         model_id,
         token=hf_auth_token,
     )
 
+    # Model Quantization 
     bnb_config = transformers.BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_quant_type='nf4',
@@ -102,8 +128,20 @@ def getModel(model_id, hf_auth_token):
     return llm
 
 
-def generate_response(txt,choice='txt', incontext_learning=True):
-    print(txt)
+def generate_response(txt,choice='txt', rag=True):
+    """
+    Generates a response based on input text and pre-trained language models.
+
+    Args:
+        txt (str): Input text.
+        llm (HuggingFacePipeline): Pre-trained language model.
+        db (Chroma): Chroma vector store.
+        rag (bool, optional): Whether to use Retrieval Augmented Generation (RAG). Defaults to True.
+
+    Returns:
+        str: Generated response.
+    """
+
     model_id = config.summerizer_model_id
     hf_auth_token = config.hf_token
     store_dir_path = config.store_dir_path
@@ -111,7 +149,7 @@ def generate_response(txt,choice='txt', incontext_learning=True):
     llm = getModel(model_id, hf_auth_token)
     # txt = txt.decode('utf-8')
 
-    if incontext_learning == True:
+    if rag == True:
         db = database(store_dir_path)
         search = db.similarity_search(txt, n_results=5)
 
