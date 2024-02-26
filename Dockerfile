@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.10-slim AS base
+FROM python:3.8-slim AS base
 
 RUN apt-get -y update
 RUN apt-get install build-essential -y
@@ -32,5 +32,5 @@ RUN wget -O /srv/bio_text_book.pdf  https://assets.openstax.org/oscms-prodcms/me
 EXPOSE $PORT
 
 # Run the Streamlit app in the background
-change the name of the script to the correct name, and then delete this line
+#change the name of the script to the correct name, and then delete this line
 CMD ["streamlit", "run", "streamlit_app.py", "--server.port", "8501", "--server.headless", "true"]
